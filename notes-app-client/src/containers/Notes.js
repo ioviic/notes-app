@@ -3,7 +3,7 @@ import { API, Storage } from "aws-amplify";
 import { FormGroup, FormControl, ControlLabel } from "react-bootstrap";
 import LoaderButton from "../components/LoaderButton";
 import config from "../config";
-import { s3Upload } from "../libs/awsLib";
+import { s3Upload, s3Delete } from "../libs/awsLib";
 import "./notes.css";
 
 export default class Notes extends Component {
@@ -84,6 +84,7 @@ export default class Notes extends Component {
     try {
       if (this.file) {
         attachment = await s3Upload(this.file);
+        await s3Delete(this.state.note.attachment)
       }
 
       await this.saveNote({
@@ -116,6 +117,7 @@ export default class Notes extends Component {
     this.setState({ isDeleting: true });
 
     try {
+      await s3Delete(this.state.note.attachment)
       await this.deleteNote();
       this.props.history.push("/");
     } catch (e) {
